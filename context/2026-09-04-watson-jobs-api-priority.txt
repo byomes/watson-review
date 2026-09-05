@@ -1,0 +1,50 @@
+WATSON JOBS — RANKED BY PRIORITY FOR CLAUDE API ACCESS
+(context: $10/mo budget being added so Watson can call Claude.ai for deeper-reasoning jobs; local Ollama models handle everything today, with a documented fabrication weakness on comparison-style reasoning per bug #118/#119)
+
+Grouped by subsystem (~300 files across ~80 subsystems in jobs/ as of 2026-09-05; individual files within a subsystem like schema.py/migrate_*.py/__init__.py are plumbing, not separate jobs).
+
+Two things worth checking before allocating budget:
+- jobs/llm/compare_reasoning.py is almost certainly the code path behind the qwen3:8b "fabrication-comparisons mixed" bug already known from prior debugging — the single most evidence-backed candidate here.
+- jobs/dev/claude_api_final_review.py already exists in the devdispatch pipeline — check what it currently does/costs before budgeting fresh spend on it.
+
+TIER 1 — reasoning-critical, low volume, real stakes if wrong
+1. jobs/llm/compare_reasoning.py — comparison reasoning; documented local-model fabrication bug
+2. jobs/adelphos/security_monitor.py + actions.py — fraud-signup detection, Priority 1
+3. jobs/analytics/data_chat.py — leader-facing open Q&A on attendance/web/contact data
+4. jobs/skillbuilder/audit.py + router.py + acquire.py — Watson's own skill-building/self-extension logic
+5. jobs/session_archives/classify.py — classification of Watson's own session history, errors compound over time
+6. jobs/memory/reflect.py + propose.py + wrap_up.py — Watson's own memory synthesis, errors compound over time
+7. jobs/intent/classifier.py — routes every user request; misrouting breaks everything downstream
+
+TIER 2 — real content quality, external-facing or leadership-facing
+8. jobs/pastoral_notes/handler.py + prompt.py — pastoral note summarization, sensitive content
+9. jobs/team/extractor.py + note_task_scan.py + pre_meeting.py — action-item extraction from notes/meetings
+10. jobs/meet/fireflies_review.py + templates/elder_review.py — meeting transcript review/synthesis
+11. jobs/gcal/reasoner.py + pre_meeting_brief.py + scan_meeting_patterns.py — calendar reasoning/briefing
+12. jobs/writing/* (grammar_checker, style_checker, readability, manuscript_tracker) — feeds Trust Issues book work
+13. jobs/comms/* (Comms Desk) — public Facebook/email content for Kaci
+14. jobs/connect_cards/pastoral_reports.py + shepherding_report.py + state_of_church.py — pastoral-care-driving reports
+15. jobs/curator/research.py — synthesizes ChatGPT-research imports
+16. jobs/email_reply/drafter.py + jobs/email_job/draft_email.py — drafted prose sent as/reviewed by a human
+
+TIER 3 — worth it if budget stretches, real but lower stakes or exploratory
+17. jobs/trading/evaluate.py + risk.py + iteration_loop.py — paper-only, no real edge yet, but exactly where deeper reasoning could find one
+18. jobs/research/summarizer.py + semantic_search.py — general research synthesis
+19. jobs/retreats/fit.py — trip/retreat match-quality reasoning
+20. jobs/congregation/member_match.py + duplicate_review.py — fuzzy-match judgment calls
+21. jobs/campaigns/weekly_digest.py + book_launch_parser.py — marketing content generation
+22. jobs/trip/propose.py — travel proposal generation
+23. jobs/dev/claude_api_final_review.py — check what this already does before allocating new budget here
+24. jobs/data/data_analyzer.py — generic data interpretation
+
+TIER 4 — mechanical/infra/low-stakes, no clear reasoning payoff
+- jobs/arc/*, jobs/arc_interest/* (mostly CRUD: signup, invite, password recovery)
+- jobs/congregation/* reports beyond #14/#20 above (attendance_web, deacons_web, papercards_web — data pulls)
+- jobs/kb/* (search/sync/index — mechanical once built)
+- jobs/micah_tasks/*, jobs/tasks/*, jobs/reminders/* (task/reminder mechanics)
+- jobs/telegram/*, jobs/dashboard/app.py, jobs/devdispatch/* (infra)
+- jobs/backup.py, jobs/backup_local.py, jobs/cleanup.py, jobs/watcher.py, jobs/scheduler.py (infra)
+- jobs/audiobook/*, jobs/documents/*, jobs/design/* (mechanical media/doc processing)
+- jobs/facebook/*, jobs/givebutter/*, jobs/gsheets/*, jobs/sms/*, jobs/contacts/* (sync/dispatch mechanics)
+- jobs/qr/*, jobs/thesis_tracker/* (mostly citations/scrape/tracking), jobs/misc/* (personal utility scripts), jobs/dadjoke/*, jobs/monitoring/* (weather/log_watch)
+- jobs/migrate/*, jobs/migration/* — one-off migrations, not ongoing jobs
